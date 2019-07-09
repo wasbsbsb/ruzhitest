@@ -1,0 +1,43 @@
+.list {
+    height: 600px;
+    width: 800px;
+    font-size: 36px;
+    font-weight: 600;
+}
+
+.top {
+    height: 60px;
+    width: 800px;
+    display: flex;
+}
+
+.theLast {
+    width: 60px;
+    height: 30px;
+    float: left;
+    font-size: 16px;
+    display: block;
+    line-height: 30px;
+    text-align: center;
+    border: 1px solid #ccc;
+    margin: 0 20px;
+}
+
+.list_li {
+    transition: all .5s;
+}
+
+.list_li:hover {
+    background: #ccc;
+}
+
+.look {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 5px;
+}
+
+.list_li:hover .look {
+    display: block;
+}

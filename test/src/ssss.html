@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/react.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/JSXTransformer.js"></script>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        .container {
+            margin-left: 200px;
+            margin-top: 100px;
+        }
+
+        button {
+            width: 100px;
+            height: 20px;
+            margin-left: 10px;
+        }
+
+        input {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="container" class="container"></div>
+    <script type="text/jsx">
+
+        // TodoList 组件是一个整体的组件，最终的React渲染也将只渲染这一个组件
+        // 该组件用于将『新增』和『列表』两个组件集成起来，并且存储 arr 的数据
+        var TodoList = React.createClass({
+            // 初始化数据
+            getInitialState: function () {
+                return {
+                    //数组存储
+                    arr: [{
+                        title:"早餐",
+                        content:"牛奶",
+                        time:"10"
+                    },
+                        {
+                            title:"午餐",
+                            content:"肉奶",
+                            time:"13"
+                        }]
+                };
+            },
+            // 接收一个传入的数据，并将它实时更新到组件的 state 中，以便组件根据数据重新render
+            // 只要改变了 state ，react自动执行 reader 计算
+
+            //任务标题、内容、时间，三部分需要用到数组中的对象
+            handleChange: function (rows) {
+                this.setState({
+    //                arr: new Mask(title,content,time)
+                    arr:rows
+                });
+    //            console.log(arr)
+            },
+            render: function () {
+                return (
+                        <div>
+                            {/*
+                             AddList 组件，传入两个属性onAdd,todo
+                             todo将 todolist 的数据传入到组件，当新增时，更新todolist数据
+                             onAdd -  将 handleChange 函数传入到组件，新增时，用它来处理最新的todolist数据
+                             */}
+                            <AddList onAdd={this.handleChange} todo={this.state.arr} />
+                            {/*
+                             集成 DeleteList 组件，传入两个属性 onDel,todo
+                             todo将 todolist 的数据传入到组件，当删除时，更新todolist数据
+                             onDel - 将 handleChange 函数传入到组件，删除时，用它来处理最新的todolist数据
+                             */}
+                            <DeleteList onDel={this.handleChange} todo={this.state.arr} />
+                        </div>
+                );
+            }
+        });
+        /*
+        * ddList 组件用于新增数据，需要todo 和 onAdd 两个属性
+        * 当从 input 中获取数据时，将新数据 push 到todo中，
+        * 然后使用 onAdd 调用 TodoList 的 handleChange 来更新state，然后react自动render
+        * */
+
+
+    //    增加和查询可以合并到一起用
+        var AddList = React.createClass({
+    //        增加数据模块
+            handleAdd: function (e) {
+                e.preventDefault();
+                // 通过 refs 获取相信input元素，然后获取输入的内容
+                var titleDOM = this.refs.title.getDOMNode();
+                var titleValue = titleDOM.value.trim();
+                var contentDOM = this.refs.content.getDOMNode();
+                var contentValue = contentDOM.value.trim();
+                var timeDOM = this.refs.time.getDOMNode();
+    //            时间强行转化位数字，方便后续排序
+                var timeValue = Number(timeDOM.value.trim());
+
+                // 获取传入的todolist数据
+                var rows = this.props.todo || [];
+    //            console.log("ok")
+                    if (titleValue !== '' && contentValue !== '' && timeValue !== '') {
+                        // 更新数据，并使用 onAdd 更新到 TodoList 组件的 state 中
+                        if(!isNaN(timeValue)){
+    //                        把对应的每个input的值通过对象保存到数组中
+                            rows.push(
+                                    {
+                                        title:titleValue,
+                                        content:contentValue,
+                                        time:timeValue
+                                    }
+                            );
+                            this.props.onAdd(rows);
+                        }else{
+                            alert("日期只能为数字（单位：天），请重新输入！");
+                        }
+
+                    }else{
+                        alert("您有信息未填写，请核对后再【添加】");
+                    }
+    //            把值保存到数组后，及时清空input，用户体验好
+                titleDOM.value = contentDOM.value = timeDOM.value= '';
+            },
+
+            /*              搜索数据模块
+            * 点击搜索的时候，先把所有className的input的display设置为none隐藏
+            * 数组中遍历的时候，把符合条件的，设为 显示        *
+            * */
+            handleSearch:function(e) {
+                e.preventDefault();
+
+                console.log(this.refs.title.getDOMNode())
+                this.props.todo.map(function (item, i) {
+                            if(item.time == 10){
+                                 alert("10")
+                             };
+                    console.log(item.time + "......"+ i);
+                })
+            },
+            render: function () {
+                return (
+                    // 用回车键 和 点击事件，触发 handleAdd 事件，用户体验好
+
+                        <form onsubmit={this.handleAdd}>
+                            <input type="text" ref="title" id="title" placeholder="请输入任务标题" autoComplete="off" />
+                            <input type="text" ref="content" id="content" placeholder="请输入内容" autoComplete="off" />
+                            <input type="text" ref="time" id="time" placeholder="请输入到期时间（单位：天）" autoComplete="off" />
+                            <button className="add" onClick={this.handleAdd} >添加</button>
+                            <button className="search" onClick={this.handleSearch}>搜索/排序</button>
+                        </form>
+                );
+            }
+        });
+
+        /*      DeleteList 完成删除 修改功能
+        *可以删除某一项内容，有 noDel，todo两个属性
+        *遍历todo的内容，生成数据列表和删除按钮
+        *对某一项执行删除时，将todo中的数据删除
+        * 然后通过 onDel 事件调用 TodoList 的 handleChange 来更新state，然后react自动render
+        *修改值时用的中间变量
+        */
+        var titleV,contentV,timeV;
+        var DeleteList = React.createClass({
+
+            //删除事件绑定
+            handleDel: function (e) {
+                var delIndex = e.target.getAttribute('data-key');
+
+                // 更新数据，并使用 onDel 更新到 TodoList 的 state 中，以便 React自动render
+                this.props.todo.splice(delIndex, 1);
+                this.props.onDel(this.props.todo);
+            },
+    //        修改事件绑定
+            titleChange: function (e) {
+    //            console.log(e.target.value)
+                titleV = e.target.value;
+    //            console.log(titleV)
+            },
+            contentChange: function (e) {
+                contentV = e.target.value;
+            },
+            timeChange: function (e) {
+                timeV = e.target.value;
+            },
+            /*
+            * 修改的时候，用户先直接修改数据
+            * 然后点击确认修改的时候在完成对数组值的修改操作
+            * */
+            handleAlt: function (e) {
+                e.preventDefault();
+                var delIndex = e.target.getAttribute('data-key');
+                this.props.todo[delIndex].title = titleV;
+                this.props.todo[delIndex].content = contentV;
+                this.props.todo[delIndex].time = timeV;
+                console.log(this.props.todo)
+
+            },
+            render: function () {
+    //            console.log(this.props.todo.map)
+                return (
+                        <ul id="todo-list">
+                            {
+                                // {/* 遍历数据 */}
+                                this.props.todo && this.props.todo.map(function (item, i) {
+                                    return (
+                                            <li ref="tip">
+                                                <input defaultValue={item.title} onChange={this.titleChange} className="val"/>
+                                                <input defaultValue={item.content}  onChange={this.contentChange} className="val"/>
+                                                <input defaultValue={item.time}  onChange={this.timeChange} className="val"/>
+                                                <button className="destroy" onClick={this.handleDel} data-key={i}>delete</button>
+                                                <button className="alter" onClick={this.handleAlt} data-key={i}>Alt</button>
+                                            </li>
+                                    );
+                                }.bind(this)) // {/* 绑定函数的执行this - 以便 this.handleDel */}
+                            }
+                        </ul>
+                );
+            }
+        });
+
+        React.render(<TodoList />, document.getElementById('container'));
+
+    </script>
+</body>
+
+</html>

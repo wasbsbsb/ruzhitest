@@ -11,7 +11,9 @@ import { createStore } from 'redux';
 // 提供对react支持的库；
 import { Provider } from 'react-redux';
 // createstore是创建一个存放的仓库
-import Login from './Login'
+import Login from './Login';
+import List from './Todolist';
+import Welcome from './Welcome'
 
 
 // 创建一个store
@@ -25,10 +27,33 @@ let store = createStore(
                 })
                 .catch(function (error) {
                     console.log(error);
-             })
+                })
         },
+        list: [
+            {
+                name: 'ssss1',
+                height: '60px',
+                opct: '1',
+                check: false
+            }, {
+                name: 'ssss2',
+                height: '60px',
+                opct: '1',
+                check: true
+            }, {
+                name: 'ssss3',
+                height: '60px',
+                opct: '1',
+                check: true
+            }
+        ]
     }, action) => {
         switch (action.type) {
+            case 'setlist':
+                return {
+                    ...state,
+                    list: action.list
+                }
             case 'setname':
                 return {
                     ...state,
@@ -44,7 +69,23 @@ let store = createStore(
 
 ReactDOM.render(
     <Provider store={store}>
-        <Login />
+        <div style={{
+            position: 'relative'
+        }}>
+            <fieldset>
+                <legend style={{
+                    border: "1px solid #333"
+                }}>the one</legend>
+                <Login />
+            </fieldset>
+            <Welcome />
+            <fieldset>
+                <legend style={{
+                    border: "1px solid #333"
+                }}>the tow</legend>
+                <List />
+            </fieldset>
+        </div>
     </Provider>
     , document.getElementById('root'));
 

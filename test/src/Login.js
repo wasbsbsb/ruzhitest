@@ -22,7 +22,7 @@ let Login = class Login extends React.Component {
                 {/* 获取redux的值 */}
                 <input type="text" defaultValue={this.props.zlc} />
 
-                <div>  </div>
+                <div></div>
             </div>
         )
     }
